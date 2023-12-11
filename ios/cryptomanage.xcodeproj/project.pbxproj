@@ -9,11 +9,23 @@
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* cryptomanageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* cryptomanageTests.m */; };
 		0C80B921A6F3F58F76C31292 /* libPods-cryptomanage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-cryptomanage.a */; };
+		0FA9A2710BE34869A807766E /* Sora-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7BF6A05EB93E46CE997A0535 /* Sora-Regular.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		3FAA0B232B257F7000331940 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 3F04D9342B246DB400FA8A5B /* Fonts */; };
+		3FAA0B252B25A28C00331940 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3FAA0B242B25A28C00331940 /* GoogleService-Info.plist */; };
+		481228D2264140A58C748EF0 /* Sora-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66F4157E36364FE59A2F95BE /* Sora-Thin.ttf */; };
+		4828F9863BCF45328823B545 /* RubikBubbles-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B311F89C1FD94F7999F27A5B /* RubikBubbles-Regular.ttf */; };
+		72D697C7523C43FD92F4074E /* Sora-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 15AE2898BB2647A3BDFF9BFC /* Sora-Bold.ttf */; };
 		7699B88040F8A987B510C191 /* libPods-cryptomanage-cryptomanageTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-cryptomanage-cryptomanageTests.a */; };
+		7FBCE5FD6F2B448783ED4946 /* Sora-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ABEEAF0353B54F0EA87060A6 /* Sora-ExtraLight.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		DDAB95E37029463CB61109C1 /* Sora-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D17A2C1FD4F473F9A1E66B7 /* Sora-Light.ttf */; };
+		E82F5D5582744EE68E50811D /* Sora-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ACD98B64A4F947EB8FED557D /* Sora-SemiBold.ttf */; };
+		ED1CE6F459144B6296387014 /* Sora-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3BA8EF1B0298474FAD8A6DF4 /* Sora-Medium.ttf */; };
+		F09DF070B0C844B5B90ECA27 /* Acme-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2B93138C8CC4417CA8F86A49 /* Acme-Regular.ttf */; };
+		FEA924BD0ABF4030842AE76C /* Sora-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C9AD79AC2204067BFE64DD7 /* Sora-ExtraBold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,13 +48,25 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = cryptomanage/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = cryptomanage/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = cryptomanage/main.m; sourceTree = "<group>"; };
+		15AE2898BB2647A3BDFF9BFC /* Sora-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-Bold.ttf"; path = "../src/assests/Fonts/Sora-Bold.ttf"; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-cryptomanage-cryptomanageTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-cryptomanage-cryptomanageTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B93138C8CC4417CA8F86A49 /* Acme-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Acme-Regular.ttf"; path = "../src/assests/Fonts/Acme-Regular.ttf"; sourceTree = "<group>"; };
+		2C9AD79AC2204067BFE64DD7 /* Sora-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-ExtraBold.ttf"; path = "../src/assests/Fonts/Sora-ExtraBold.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-cryptomanage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-cryptomanage.debug.xcconfig"; path = "Target Support Files/Pods-cryptomanage/Pods-cryptomanage.debug.xcconfig"; sourceTree = "<group>"; };
+		3BA8EF1B0298474FAD8A6DF4 /* Sora-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-Medium.ttf"; path = "../src/assests/Fonts/Sora-Medium.ttf"; sourceTree = "<group>"; };
+		3F04D9342B246DB400FA8A5B /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fonts; sourceTree = "<group>"; };
+		3FAA0B242B25A28C00331940 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-cryptomanage.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-cryptomanage.release.xcconfig"; path = "Target Support Files/Pods-cryptomanage/Pods-cryptomanage.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-cryptomanage-cryptomanageTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-cryptomanage-cryptomanageTests.debug.xcconfig"; path = "Target Support Files/Pods-cryptomanage-cryptomanageTests/Pods-cryptomanage-cryptomanageTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-cryptomanage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-cryptomanage.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		66F4157E36364FE59A2F95BE /* Sora-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-Thin.ttf"; path = "../src/assests/Fonts/Sora-Thin.ttf"; sourceTree = "<group>"; };
+		7BF6A05EB93E46CE997A0535 /* Sora-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-Regular.ttf"; path = "../src/assests/Fonts/Sora-Regular.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = cryptomanage/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-cryptomanage-cryptomanageTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-cryptomanage-cryptomanageTests.release.xcconfig"; path = "Target Support Files/Pods-cryptomanage-cryptomanageTests/Pods-cryptomanage-cryptomanageTests.release.xcconfig"; sourceTree = "<group>"; };
+		9D17A2C1FD4F473F9A1E66B7 /* Sora-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-Light.ttf"; path = "../src/assests/Fonts/Sora-Light.ttf"; sourceTree = "<group>"; };
+		ABEEAF0353B54F0EA87060A6 /* Sora-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-ExtraLight.ttf"; path = "../src/assests/Fonts/Sora-ExtraLight.ttf"; sourceTree = "<group>"; };
+		ACD98B64A4F947EB8FED557D /* Sora-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Sora-SemiBold.ttf"; path = "../src/assests/Fonts/Sora-SemiBold.ttf"; sourceTree = "<group>"; };
+		B311F89C1FD94F7999F27A5B /* RubikBubbles-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RubikBubbles-Regular.ttf"; path = "../src/assests/Fonts/RubikBubbles-Regular.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -86,7 +110,9 @@
 		13B07FAE1A68108700A75B9A /* cryptomanage */ = {
 			isa = PBXGroup;
 			children = (
+				3F04D9342B246DB400FA8A5B /* Fonts */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
+				3FAA0B242B25A28C00331940 /* GoogleService-Info.plist */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -106,6 +132,23 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		557F0EC4FD6E46189042F97C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2B93138C8CC4417CA8F86A49 /* Acme-Regular.ttf */,
+				B311F89C1FD94F7999F27A5B /* RubikBubbles-Regular.ttf */,
+				15AE2898BB2647A3BDFF9BFC /* Sora-Bold.ttf */,
+				2C9AD79AC2204067BFE64DD7 /* Sora-ExtraBold.ttf */,
+				ABEEAF0353B54F0EA87060A6 /* Sora-ExtraLight.ttf */,
+				9D17A2C1FD4F473F9A1E66B7 /* Sora-Light.ttf */,
+				3BA8EF1B0298474FAD8A6DF4 /* Sora-Medium.ttf */,
+				7BF6A05EB93E46CE997A0535 /* Sora-Regular.ttf */,
+				ACD98B64A4F947EB8FED557D /* Sora-SemiBold.ttf */,
+				66F4157E36364FE59A2F95BE /* Sora-Thin.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -122,6 +165,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				557F0EC4FD6E46189042F97C /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -199,7 +243,8 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1210;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
@@ -241,8 +286,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3FAA0B232B257F7000331940 /* Fonts in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				F09DF070B0C844B5B90ECA27 /* Acme-Regular.ttf in Resources */,
+				4828F9863BCF45328823B545 /* RubikBubbles-Regular.ttf in Resources */,
+				72D697C7523C43FD92F4074E /* Sora-Bold.ttf in Resources */,
+				FEA924BD0ABF4030842AE76C /* Sora-ExtraBold.ttf in Resources */,
+				7FBCE5FD6F2B448783ED4946 /* Sora-ExtraLight.ttf in Resources */,
+				DDAB95E37029463CB61109C1 /* Sora-Light.ttf in Resources */,
+				ED1CE6F459144B6296387014 /* Sora-Medium.ttf in Resources */,
+				0FA9A2710BE34869A807766E /* Sora-Regular.ttf in Resources */,
+				E82F5D5582744EE68E50811D /* Sora-SemiBold.ttf in Resources */,
+				481228D2264140A58C748EF0 /* Sora-Thin.ttf in Resources */,
+				3FAA0B252B25A28C00331940 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -467,6 +524,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = cryptomanage/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -493,6 +551,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = cryptomanage/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -544,6 +603,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -624,6 +684,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
