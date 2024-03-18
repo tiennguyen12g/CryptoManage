@@ -6,7 +6,7 @@ import {
 
 //hooks
 import {useTheme} from '../../Theme/ThemeContext';
-import { useEffect, useState } from "react";
+import { useEffect, useState, Dispatch, SetStateAction } from "react";
 
 // Assets image, svg, mp4 ...
 import  Logo  from "../../assests/Icons/InitialIcons/Logo";
@@ -25,7 +25,9 @@ import Entypo from "react-native-vector-icons/Entypo"
 // Outside library
 import {useNavigation} from '@react-navigation/native';
 import { TouchableOpacity } from "react-native-gesture-handler";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { useFirstTimeUseApp } from "../../Zustand/FirstTimeUseApp";
 // Utilitys component.
 import Checkbox from "../../Utilitys/CheckBox";
 import LinkReference from "../../Utilitys/LinkReference";
@@ -36,17 +38,30 @@ import GoogleLogin from "../../API_Third_Party/GoogleLogin";
 const {width, height} = Dimensions.get("screen");
 const widthSizeBox = width - 40 * 2 > 300 ? (width - 40 * 2) : 300;
 const userDataTest ={
-  "email": "tiennguyen32g@gmail.com",
-  "password": "Abcd1234"
+  "email": "abcd@gmail.com",
+  "password": "123456"
 }
+interface UserInfoProps {
+  isFirstTime: boolean;
+}
+interface SignInProps {
+  setIsFirstTime: (value: boolean) => void;
+}
+
 export default function Sign_In(){
   const {theme} = useTheme();
   const navigation = useNavigation();
   const iconSize = 20;
 
+  // Get initial app mode
+  const firstTimeUseApp = useFirstTimeUseApp((state) => state.firstTimeUseApp);
+  const setFirstTimeUseApp = useFirstTimeUseApp((state) => state.setFirstTimeUseApp);
+  const isLogined = useFirstTimeUseApp((state) => state.isLogined)
+  const setIsLogined = useFirstTimeUseApp((state) => state.setIsLogined)
+
   // State for TextInput
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('abcd@gmail.com');
+  const [password, setPassword] = useState('123456');
   
 
   // State to check the value input is valid or invalid.
@@ -56,10 +71,16 @@ export default function Sign_In(){
     const handleSignIn = () =>{
       const isCorrectUser = (password === userDataTest.password) && (email === userDataTest.email)
       if(isCorrectUser){
-        setIsValidUserSecurity(true)
+        setIsValidUserSecurity(true);
+        setFirstTimeUseApp(false)
+        setIsLogined(true)
       }else{
         setIsValidUserSecurity(false)
       }
+    }
+    const handleOnOffIntroduceMode = async () => {
+      console.log('isLogined', isLogined);
+      setIsLogined(false)
     }
   return(
       <KeyboardAvoidingView 
@@ -165,9 +186,9 @@ export default function Sign_In(){
                       <View style={{paddingRight: 15}}><Facebook width={30} height={30}/></View>
                       <View style={{paddingRight: 0}}><Apple width={30} height={30}/></View>
                   </View> 
-                  <View>
+                  {/* <View>
                     <GoogleLogin />
-                  </View>       
+                  </View>        */}
               </View>
           </TouchableWithoutFeedback>
       </KeyboardAvoidingView>

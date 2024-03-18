@@ -7,7 +7,8 @@ import { useTheme } from '../../Theme/ThemeContext';
 import LinearGradient from 'react-native-linear-gradient';
 import { white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get("screen");
 const introPageNo = 3;
@@ -19,7 +20,7 @@ export default function Introduction() {
   const insets = useSafeAreaInsets();
   const insetTop = insets.top;
   const insetBottom = insets.bottom;
-  
+  const navigation = useNavigation();
   const [dotActive, setDotActive] = useState<number>(1);
   const {theme} = useTheme();
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -37,7 +38,6 @@ export default function Introduction() {
               : {backgroundColor: theme.deactiveIcon},
           ]}
         >
-            
           </View>,
       );
     }
@@ -73,6 +73,11 @@ export default function Introduction() {
       }
     };
   }
+  const handleSaveFirstTimeUseApp = async () => {
+    console.log('getstart');
+    await AsyncStorage.setItem('firstTimeUseApp', JSON.stringify({firstTimeUseApp: false}));
+    navigation.navigate("InitialSign" as never)
+  }
   return (
     <View style={[styles.container, {backgroundColor: "red"}]}>
       {/* the dot show the number of page and the current page in the screen */}
@@ -106,14 +111,16 @@ export default function Introduction() {
           </View>
           <View style={{height:"50%", justifyContent:"flex-end"}}>
             {dotActive === introPageNo ? (
-              <LinearGradient
-                colors={['#FFC200', '#e61603']}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 1}}
-                style={styles.getStartBtn}
-              >
-                <Text style={{fontSize:20, color:theme.textButtonGradient, fontWeight:"600"}}>GET START</Text>
-              </LinearGradient>
+              <TouchableOpacity onPress={handleSaveFirstTimeUseApp}>
+                <LinearGradient
+                  colors={['#FFC200', '#e61603']}
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 1}}
+                  style={styles.getStartBtn}
+                >
+                  <Text style={{fontSize:20, color:theme.textButtonGradient, fontWeight:"600"}}>GET START</Text>
+                </LinearGradient>
+              </TouchableOpacity>
             ): ("")}
           </View>
         </View>

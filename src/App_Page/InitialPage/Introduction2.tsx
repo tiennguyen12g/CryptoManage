@@ -38,7 +38,7 @@ export default function Introduction2() {
           ]}
         >
             
-          </View>,
+        </View>,
       );
     }
     return dots;
@@ -90,7 +90,7 @@ export default function Introduction2() {
 
   const navigation = useNavigation();
   const goToSign_In_Up_Page = () => {
-    navigation.navigate("SignIn" as never);
+    navigation.navigate("InitialSign" as never);
   }
   return (
     <View 
@@ -98,8 +98,8 @@ export default function Introduction2() {
         styles.container, 
         
         {
-          paddingTop: Platform.OS === 'ios' ? insetTop: 0,
-          marginBottom: Platform.OS === 'ios' ? insetBottom : 0,
+          paddingTop: Platform.OS === 'ios' ? 0: 0,
+          marginBottom: Platform.OS === 'ios' ? 0 : 0,
         },
       ]}
     >
@@ -140,6 +140,8 @@ export default function Introduction2() {
           styles.dotAndNavigate,
           {
             height: Platform.OS === "ios" ? (heightIos * 0.2) : (height * 0.2), //50 is total pading Value in imageAndSologan
+            marginTop: Platform.OS === "ios" ? 0 : 0,
+            top: Platform.OS === "ios" ? 0 : 0,
           }
         ]}
       >

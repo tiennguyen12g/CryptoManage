@@ -11,30 +11,38 @@ import {
   initialWindowMetrics,
 } from 'react-native-safe-area-context';
 
+
+import { useFirstTimeUseApp } from './src/Zustand/FirstTimeUseApp';
 interface UserInfoProps {
-  isFirstTime: boolean;
+  firstTimeUseApp: boolean;
 }
 
 export default function App() {
   const [data, setData] = useState<any>();
-  const [isFirstTime, setIsFirstTime] = useState(true);
+  // const [isFirstTimeUseApp, setIsFirstTimeUseApp] = useState<boolean>(true);
+
+  const firstTimeUseApp = useFirstTimeUseApp((state) => state.firstTimeUseApp);
+  const setFirstTimeUseApp = useFirstTimeUseApp((state) => state.setFirstTimeUseApp);
+
   useEffect(() => {
     async function GetData() {
-      const getIsFirstTime = await GetInitialPageStatus()
+      const getIsFirstTimeUseApp = await GetInitialPageStatus()
         .then((value: any) => {
+          console.log('value', value);
           return value;
         })
         .catch(err => {
           console.log('Error in Get', err);
         });
-      setIsFirstTime(getIsFirstTime);
+      setFirstTimeUseApp(getIsFirstTimeUseApp);
     }
     GetData();
   }, []);
+  const defaultStatus = null;
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <ThemeProvider>
-          {isFirstTime === false ? <IntroNavigator /> : <AppNavigator />}
+          {defaultStatus === true ? <IntroNavigator /> : <AppNavigator />}
         </ThemeProvider>
     </SafeAreaProvider>
   );
@@ -44,23 +52,23 @@ export default function App() {
 const GetInitialPageStatus = async () => {
   try {
     // Retrieve the JSON string from AsyncStorage
-    const jsonData = await AsyncStorage.getItem('userInfos');
+    const jsonData = await AsyncStorage.getItem('firstTimeUseApp');
 
     if (jsonData !== null) {
       // Parse the JSON string back to an array or object
       const parsedData: UserInfoProps = JSON.parse(jsonData);
-      const isFirstTime = parsedData.isFirstTime;
-      return true;
+      const firstTimeUseApp = parsedData.firstTimeUseApp;
+      console.log('firstTimeUseApp', firstTimeUseApp);
+      return firstTimeUseApp;
     } else {
       // Handle the case where the key is not yet stored
-      console.log(
-        'No data found in AsyncStorage. Initializing with default data.',
-      );
+      console.log('No data found in AsyncStorage. Initializing with default data.',);
 
       // Example: Set some default data if the key is not found
-      const storeData: UserInfoProps = {isFirstTime: true};
-      await AsyncStorage.setItem('userInfos', JSON.stringify(storeData));
-      console.log('Default data set in AsyncStorage');
+      // const storeData: UserInfoProps = {firstTimeUseApp: true};
+      // await AsyncStorage.setItem('firstTimeUseApp', JSON.stringify(storeData));
+      // console.log('Default data set in AsyncStorage');
+      // return true;
       return true;
     }
   } catch (error) {

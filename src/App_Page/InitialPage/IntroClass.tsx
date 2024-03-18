@@ -30,7 +30,7 @@ export default function IntroClass({
       {/* Content for the app's feature */}
       <View style={[styles.contentFeature, ]}>
         <Text style={{fontSize: theme.sizeTitle, color:theme.textTitle, fontWeight:"600", marginBottom:10}}>{contentTitle}</Text>
-        <Text style={{fontSize: theme.sizeNormalText, color: theme.textNormal, flexWrap:"wrap", textAlign: "center"}}>{content}</Text>
+        <Text style={{fontSize: theme.sizeNormalText, color: theme.textNormal, flexWrap:"wrap", textAlign: "center", }}>{content}</Text>
       </View>
     </View>
   )
@@ -54,9 +54,12 @@ const styles = StyleSheet.create({
   },
   contentFeature:{
     width:width,
+    height:'auto',
     justifyContent:"center",
     alignItems:'center',
     paddingHorizontal:20,
     marginTop: 20,
+    // borderColor: 'gray',
+    // borderWidth: 1, 
   }
 })

@@ -4,17 +4,17 @@ import {View, Platform, Text, TouchableOpacity} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
-import { useFirstTimeUseApp } from '../../Zustand/FirstTimeUseApp';
+
 // Vector icons
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 //List introduce component pages
-import Introduction2 from './Introduction2';
-import Sign_In from '../../App_Features/Account/Sign_In';
-import Sign_Up from '../../App_Features/Account/Sign_Up';
-import TestNavigate from './TestNavigate';
-import InitialSign from '../../App_Features/Account/InitialSign';
-import ForgotPassword from '../../App_Features/Account/ForgotPassword';
+import Introduction2 from '../App_Page/InitialPage/Introduction2';
+import Sign_In from '../App_Features/Account/Sign_In';
+import Sign_Up from '../App_Features/Account/Sign_Up';
+import TestNavigate from '../App_Page/InitialPage/TestNavigate';
+import InitialSign from '../App_Features/Account/InitialSign';
+import ForgotPassword from '../App_Features/Account/ForgotPassword';
 import { Dispatch, SetStateAction } from 'react';
 
 // List component page after login
@@ -29,20 +29,14 @@ const CustomBackButton = () => {
   );
 };
 
-interface IntroduceNavigatorProps {
+interface NavigatorComponentProps {
   setIsFirstTime: (value: boolean) => void;
 }
 const Stack = createStackNavigator();
-export default function IntroNavigator() {
+export default function NavigatorComponent({setIsFirstTime}: NavigatorComponentProps) {
   const insets = useSafeAreaInsets();
   const insetTop = insets.top;
   const insetBottom = insets.bottom;
-
-  // Get initial app mode
-  const firstTimeUseApp = useFirstTimeUseApp((state) => state.firstTimeUseApp);
-  const setFirstTimeUseApp = useFirstTimeUseApp((state) => state.setFirstTimeUseApp);
-  const isLogined = useFirstTimeUseApp((state) => state.isLogined);
-  console.log('islogin', isLogined, 'firstTimeUseApp', firstTimeUseApp);
   return (
     <View
       style={{ 
@@ -53,7 +47,7 @@ export default function IntroNavigator() {
     >
       <NavigationContainer>
         <Stack.Navigator 
-          initialRouteName={firstTimeUseApp === true && isLogined === false ? "Intro" : "InitialSign"}
+          initialRouteName="SignUp"
           screenOptions={{
             headerShown: true,
             headerMode: "float", //turn on this for Android
@@ -78,7 +72,6 @@ export default function IntroNavigator() {
           />
           <Stack.Screen
             name="SignIn"
-            // component={() => <Sign_In setIsFirstTime={setIsFirstTime}/>}
             component={Sign_In}
             options={{headerShown: false
             }}
