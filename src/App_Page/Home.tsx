@@ -279,7 +279,7 @@ export default function Home() {
         </View>}
       </View>
 
-  </View>
+    </View>
 
   </View>
 

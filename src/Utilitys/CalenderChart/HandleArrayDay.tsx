@@ -76,7 +76,6 @@ function HandleArrayDayCorrespondingPeriods({arrayDataPNL, periods}: HandleArray
 
   // Part 1: Create array month and year that we need to show.
     function GetMonthAndYearNeeded(periods: number,){
-      let countAddAction = 0;
       // This array store the amount of the month that we need to use. like [ 3, 12, 1];
       // Take 3 months current year, 12 months in (current -1)year and last value we take 1 month in (current - 2)year;
       const arrayListTotalMonthEachYear: number[] = [];
@@ -105,14 +104,12 @@ function HandleArrayDayCorrespondingPeriods({arrayDataPNL, periods}: HandleArray
           "monthName": monthName,
           "monthNumber": monthNumber.reverse()
         }
-
         return object;
       });
       return arrayListMonthYear;
     }; 
 
   const arrayListMonthYear = GetMonthAndYearNeeded(periods);
-  // console.log('arrayListMonthYear',arrayListMonthYear);
     
   // Part 2: Handle dataPNL from server. 
     function CreateArrayPNLForEachMonth (){
@@ -129,18 +126,15 @@ function HandleArrayDayCorrespondingPeriods({arrayDataPNL, periods}: HandleArray
         const monthName = objectData.monthName;
         const arrayTotalDayInMonth = isLeapYear(year) ? [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] : [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
         const arrayTotalDayNeed  = year ===  currentYear ? arrayTotalDayInMonth.slice(0, monthName.length) : arrayTotalDayInMonth.slice(12 - monthName.length, 12);
-        console.log('const arrayTotalDayNeed',arrayTotalDayNeed);
         const reverseMonthNumber = monthNumber.reverse();
+
+
         const arrayPNL: DataPNLType[][][] = arrayTotalDayNeed.reverse().map((totalDay: number, j: number) => {
-          
           const {indexBefore,indexAfter} = FindDayNameStartInMonth(year, reverseMonthNumber[j], totalDay);
           const totalLineShowNumberDay = (totalDay + indexBefore + (6 - indexAfter)) / 7;
-          console.log('check');
           const virtualArray: DataPNLType[][] = AddVirtualDayInList(arrayDataPNL[dataIndex], totalLineShowNumberDay, indexBefore, indexAfter, arrayTotalDayNeed[j]);
           dataIndex += 1;
           return virtualArray;
-          // Object.assign(newArrayListMonthYear[i], {"dataPNL": virtualArray})
-          // return virtualArray;
         });
         Object.assign(newArrayListMonthYear[i], {"dataPNL": arrayPNL})
         // console.log('arrayPNL', arrayPNL);
@@ -150,10 +144,6 @@ function HandleArrayDayCorrespondingPeriods({arrayDataPNL, periods}: HandleArray
       return newArrayListMonthYear;
     }; 
     const arrayVirtualPNL = CreateArrayPNLForEachMonth();
-    // console.log('arrayVirtualPNL',arrayVirtualPNL[0]);
-    // const a = arrayVirtualPNL[0];
-    // const b = a.dataPNL;
-    // console.log('b', b);
     return arrayVirtualPNL;
 }
 interface DataPNLType {
@@ -176,8 +166,6 @@ function FindDayNameStartInMonth (year: number, month: number, totalDayInMonth: 
 }
 function AddVirtualDayInList (arrayData: DataPNLType[], totalLineShowNumberDay: number, indexBefore: number, indexAfter:number, lengArrayDayInMonth: number){
     let array: DataPNLType[] = arrayData;
-    console.log('indexBefore',indexBefore);
-    console.log('re-run');
     
     for(let i = 0; i <= totalLineShowNumberDay * 7; i++){
         if(i < indexBefore){
@@ -499,8 +487,6 @@ const dataPNLForDayInYear: DataPNLType[][] = [
         "currentDayName": currentDayName
     }
 }
-// HandleArrayDay(2024,2024,dataPNLForDayInYear);
-// HandleArrayDayForCurrentYear({arrayDataPNL: dataPNLForDayInYear, currentYear: 2024, currentMonth: 3});
 
 export { HandleArrayDayForCurrentYear, HandleArrayDayForFullMonth, HandleArrayDayCorrespondingPeriods}
 
@@ -778,13 +764,4 @@ const dataPNLForDayInYear2: DataPNLType[][] = [
       dayNumber: 31,
       valuePNL: 100
     }]
-  ]
-
-  const b = [
-    [{"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 1, "valuePNL": 100}, {"dayNumber": 2, "valuePNL": 100}], 
-    [{"dayNumber": 3, "valuePNL": 100}, {"dayNumber": 4, "valuePNL": 100}, {"dayNumber": 5, "valuePNL": 100}, {"dayNumber": 6, "valuePNL": 100}, {"dayNumber": 7, "valuePNL": 100}, {"dayNumber": 8, "valuePNL": 100}, {"dayNumber": 9, "valuePNL": 100}], 
-    [{"dayNumber": 10, "valuePNL": 100}, {"dayNumber": 11, "valuePNL": 100}, {"dayNumber": 12, "valuePNL": 100}, {"dayNumber": 13, "valuePNL": 100}, {"dayNumber": 14, "valuePNL": 100}, {"dayNumber": 15, "valuePNL": 100}, {"dayNumber": 16, "valuePNL": 100}], 
-    [{"dayNumber": 17, "valuePNL": 100}, {"dayNumber": 18, "valuePNL": 100}, {"dayNumber": 19, "valuePNL": 100}, {"dayNumber": 20, "valuePNL": 100}, {"dayNumber": 21, "valuePNL": 100}, {"dayNumber": 22, "valuePNL": 100}, {"dayNumber": 23, "valuePNL": 100}], 
-    [{"dayNumber": 24, "valuePNL": 100}, {"dayNumber": 25, "valuePNL": 100}, {"dayNumber": 26, "valuePNL": 100}, {"dayNumber": 27, "valuePNL": 100}, {"dayNumber": 28, "valuePNL": 100}, {"dayNumber": 29, "valuePNL": 100}, {"dayNumber": 30, "valuePNL": 100}], 
-    [{"dayNumber": 31, "valuePNL": 100}, {"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 0, "valuePNL": 0}]
   ]

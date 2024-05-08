@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, TouchableOpacity, Animated, ViewStyle, Dimensions
+import { StyleSheet, Text, View, TouchableOpacity, Animated, ViewStyle, Dimensions,  NativeSyntheticEvent, NativeScrollEvent ,
  } from 'react-native'
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {PieChart} from "react-native-chart-tnbt";
 import {useTheme} from '@react-navigation/native';
 import LineHorizontalAnimated from '../Utilitys/LineHorizontalAnimated';
@@ -14,30 +14,54 @@ import LongPressDurationExample from '../Utilitys/SvgLineChart/TestPress';
 import CalendarChart from '../Utilitys/CalenderChart/CalenderChart';
 import CumulativePNL from '../Utilitys/SvgLineChart/CumulativePNL';
 import MyCalenderChart from '../Utilitys/CalenderChart/MyCalenderChart';
+import MyCalenderChart2 from '../Utilitys/CalenderChart/MyCalenderChart2';
+
+interface ScreenNameType {
+  screenName: string,
+  function: (isSwipe: boolean ) => void
+}
 const {width, height} = Dimensions.get("screen");
-import { HandleArrayDayForCurrentYear } from '../Utilitys/CalenderChart/HandleArrayDay';
 export default function Earning() {
   const {colors} = useTheme();
   const [boxActive, setBoxActive] = useState<string>('Overview');
+  const [boxIndex, setBoxIndex] = useState<number>(0);
 
-  const navigateOverview = () => {
+  const navigateOverview = (isSwipe: boolean ) => {
     setBoxActive("Overview");
-    handleLineIndex('Overview')
+    setBoxIndex(0)
+    handleLineIndex('Overview');
+    console.log('hello');
+    if (scrollViewRef.current && isSwipe) {
+      scrollViewRef.current.scrollTo({ x: (0)*(width),animated: true});
+    }
   }
 
-  const navigateSpot = () => {
+  const navigateSpot = (isSwipe: boolean ) => {
     setBoxActive('Spot');
-    handleLineIndex('Spot')
+    setBoxIndex(1)
+    handleLineIndex('Spot');
+    console.log('hello');
+    if (scrollViewRef.current && isSwipe) {
+      scrollViewRef.current.scrollTo({ x: (1)*(width),animated:true, });
+    }
   }
 
-  const navigateFuture = () => {
+  const navigateFuture = (isSwipe: boolean ) => {
     setBoxActive('Future');
-    handleLineIndex('Future')
+    setBoxIndex(2)
+    handleLineIndex('Future');
+    if (scrollViewRef.current && isSwipe) {
+      scrollViewRef.current.scrollTo({ x: (2)*(width),animated:true, });
+    }
   }
   
-  const navigateEarn = () => {
+  const navigateEarn = (isSwipe: boolean) => {
     setBoxActive('Earn');
-    handleLineIndex('Earn')
+    setBoxIndex(3)
+    handleLineIndex('Earn');
+    if (scrollViewRef.current && isSwipe) {
+      scrollViewRef.current.scrollTo({ x: (3)*(width),animated:true, });
+    }
   }
 
   const lineLength = (width - 30);
@@ -49,78 +73,168 @@ export default function Earning() {
     else if(goTo === 'Earn') setLineIndex(3)
   }
   // set width for title navigate
-  const titleWidth = "25%"
+  const titleWidth = "25%";
+
+  const screenNames:ScreenNameType[] = [
+    {
+      "screenName": "Overview",
+      "function" : navigateOverview
+    },
+    {
+      "screenName": "Spot",
+      "function" : navigateSpot
+    },
+    {
+      "screenName": "Future",
+      "function" : navigateFuture
+    },
+    {
+      "screenName": "Earn",
+      "function" : navigateEarn
+    },
+  ];
+  const scrollViewRef = useRef<ScrollView | null>(null);
+  const handleScroll = useRef(
+    debounce((event: NativeScrollEvent) => {
+      const { contentOffset } = event;
+      const pageIndex = Math.ceil(contentOffset.x /width);
+      
+      screenNames.forEach((screenName: ScreenNameType, k: number)=>{
+        console.log('pageIndex', pageIndex, "k", k);
+        if(pageIndex === k && scrollViewRef.current ){
+          // console.log('screenName.screenName',screenName.screenName);
+          screenName.function(false);
+        }
+      })
+    }, 300)
+  ).current;
+
+  function debounce<T extends (...args: any[]) => void>(func: T, wait: number): T {
+    let timeout: ReturnType<typeof setTimeout>;
+    return function(this: ThisParameterType<T>, ...args: Parameters<T>): void {
+      const context = this;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        func.apply(context, args);
+      }, wait);
+    } as T;
+  }
+  // const handleScroll = (event: any) => {
+  //   console.log('dont use nut run');
+  //   const { contentOffset, layoutMeasurement } = event.nativeEvent;
+  //   const pageIndex: number = setTimeout(()=>{
+  //     const a: number = Math.ceil((contentOffset.x )/ width); 
+  //     return a;
+  //   },300) 
+  //   if (scrollViewRef.current && pageIndex) {
+      
+  //     scrollViewRef.current.scrollTo({ x: (pageIndex)*(width -30),animated: true});
+  //   }
+  //   // screenNames.forEach((screenName: ScreenNameType, k: number)=>{
+  //   //   // console.log('pageIndex', pageIndex, "k", k);
+  //   //   if(pageIndex === k && scrollViewRef.current ){
+  //   //     // console.log('screenName.screenName',screenName.screenName);
+  //   //     // screenName.function(false);
+  //   //     // setBoxActive(screenName.screenName)
+  //   //     scrollViewRef.current.scrollTo({ x: (pageIndex)*(width),animated:true, });
+  //   //   }
+  //   // })
+  //   // if (scrollViewRef.current && boxActive === "Overview") {
+  //   //   scrollViewRef.current.scrollTo({ x: (0)*(width),animated: true});
+  //   // }
+  //   // if (scrollViewRef.current && boxActive === "Spot") {
+  //   //   scrollViewRef.current.scrollTo({ x: (1)*(width),animated: true});
+  //   // }
+  //   // if (scrollViewRef.current && boxActive === "Future") {
+  //   //   scrollViewRef.current.scrollTo({ x: (2)*(width),animated: true});
+  //   // }
+  //   // if (scrollViewRef.current && boxActive === "Earn") {
+  //   //   scrollViewRef.current.scrollTo({ x: (3)*(width),animated: true});
+  //   // }
+  // };
+  console.log('earning re-render');
   return (
     <ScrollView style={[styles.earningContainer]}>
-      <Text>Earning</Text>
-      
-      {/* Title navigate */}
       <View style={{marginBottom: 10}}>
         <View style={[styles.decorNavigateBtn]}>
-          <View style={{ display:'flex', justifyContent:'center', alignItems:'center', width: titleWidth}}>
-            <TouchableOpacity onPress={navigateOverview}>
-              <Text style={[styles.titleText, {color: boxActive === "Overview" ? colors.secondary : "gray",}]}>Overview</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{ display:'flex', justifyContent:'center', alignItems:'center',width: titleWidth }}>
-            <TouchableOpacity onPress={navigateSpot}>
-              <Text style={[styles.titleText, {color: boxActive === "Spot" ? colors.secondary : "gray",}]}>Spot</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{ display:'flex', justifyContent:'center', alignItems:'center', width: titleWidth}}>
-            <TouchableOpacity onPress={navigateFuture}>  
-              <Text style={[styles.titleText, {color: boxActive === "Future" ? colors.secondary : "gray",}]}>Future</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{ display:'flex', justifyContent:'center', alignItems:'center', width: titleWidth}}>
-            <TouchableOpacity onPress={navigateEarn}>  
-              <Text style={[styles.titleText, {color: boxActive === "Earn" ? colors.secondary : "gray",}]}>Earn</Text>
-            </TouchableOpacity>
-          </View>
+          {screenNames.map((screenName: ScreenNameType, i: number) => {
+            return(
+              <View key={i} style={{ display:'flex', justifyContent:'center', alignItems:'center', width: titleWidth}}>
+                <TouchableOpacity onPress={()=> screenName.function(true)}>
+                  <Text style={[styles.titleText, {color: boxActive === screenName.screenName ? colors.secondary : "gray",}]}>
+                    {screenName.screenName}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )
+          })}
         </View>
-        <LineHorizontalAnimated lineAmount={4} indexPlace={lineIndex} animateMode='timing' lineLength={lineLength} />
+        
+        <LineHorizontalAnimated lineAmount={4} indexPlace={lineIndex} animateMode='timing' lineLength={lineLength} animateDuration={100}/>
       </View>
+      <ScrollView 
+        ref={scrollViewRef}
+        contentContainerStyle={[{ width: 4 * width}]}
+        horizontal
+        
+        pagingEnabled
+        showsHorizontalScrollIndicator={true}
+        scrollEnabled={true}
+        // onScroll={handleScroll}
+        onScroll={({ nativeEvent }) => handleScroll(nativeEvent)}
+        scrollEventThrottle={16}
+        contentOffset={{ x: 0, y: 0 }} // Set initial position to 4 times screen width 
+        style={{width:width,  minHeight: height, height: "auto"}}
+        nestedScrollEnabled
+      >
+        {screenNames.map((screenName: ScreenNameType, j: number) => {
+          return (
+            <View key={j} style={{width: width-30, borderWidth: 1, borderColor:'gray', marginRight: 30}}>
+              <Text>{screenName.screenName}</Text>
+              {boxActive === "Overview" && 
+                <View>
+                  <View style={{width:'100%'}}>
+                    <Text>
+                      Total Balance
+                    </Text>
+                    <View style={{width:'100%'}}>
+                      <Text style={{fontSize: 35, fontWeight:"600", color:'black', width: '100%', textAlign:'center'}}>
+                        $46,153.94
+                      </Text>
+                    </View>
+                    <View>
+                      <Text>Profits</Text>
+                      
+                      <SvgLineChart3 dataChart={ptData}/>
+                    </View>                
+                  </View>
+                </View>
+              }
+              {boxActive === "Spot" && 
+                <View>
+                  <View style={{width:'100%'}}>
+                    <Text>
+                      Total Balance
+                    </Text>
+                    <View style={{width:'100%'}}>
+                      <Text style={{fontSize: 35, fontWeight:"600", color:'black', width: '100%', textAlign:'center'}}>
+                        $46,153.94
+                      </Text>
+                    </View>
+                    <View>
+                      <Text>Profits</Text>    
+                      <MyCalenderChart2 timePeriods={6}/>
+                    </View>                
+                  </View>
+                </View>
+              }
+            </View>
+          )
+        })}
 
-      <View style={{width:'100%'}}>
-        <Text>
-          Total Balance
-        </Text>
-        <View style={{width:'100%'}}>
-          <Text style={{fontSize: 35, fontWeight:"600", color:'black', width: '100%', textAlign:'center'}}>
-            $46,153.94
-          </Text>
-        </View>
-        {/* <View style={{marginTop: 20}}>
-          <Text>Asset Net Worth</Text>
-          <SvgLineChart3 dataChart={ptData}/>
-        </View>
-        <View style={{marginTop: 20}}>
-          <Text>Profits</Text>
-          <SvgLineChart3 dataChart={ptData}/>
-        </View>
-        <View style={{marginTop: 20}}>
-          <Text>Cumulative PNL</Text>
-          <CumulativePNL dataChart={dataForCumulative} dataBTCTrend={dataForBTC}/>
-        </View> */}
-        {/* <View>
-          <Text>Profits</Text>
-          <SvgLineChart dataChart={ptData}/>
-          <SvgLineChart3 dataChart={ptData}/>
-        </View> */}
 
-
-      </View>
-      <View>
-        <CalendarChart />
-        <MyCalenderChart />
-      </View>
-      <View style={{position:'relative', marginTop:200, marginBottom: 300}}>
-        {/* <GiftedLineChart />
-        <GiftedLineChart2 />
-        <Chart3 />
-        <LongPressMoveExample />
-        <LongPressDurationExample /> */}
-      </View>
+        {/* Title navigate */}
+      </ScrollView>
     </ScrollView>
   )
 }
@@ -128,6 +242,7 @@ export default function Earning() {
 const styles = StyleSheet.create({
   earningContainer:{
     paddingHorizontal: 15,
+    marginTop:10,
   },
   titleText:{
     fontSize: 18,
@@ -440,3 +555,46 @@ const ptData = [
   {value: 250, date: '4 May 2022'},
   {value: 210, date: '5 May 2022'},
 ];
+
+// {boxActive === "Overview" && 
+//                 <View>
+//                   <View style={{width:'100%'}}>
+//                   <Text>
+//                     Total Balance
+//                   </Text>
+//                   <View style={{width:'100%'}}>
+//                     <Text style={{fontSize: 35, fontWeight:"600", color:'black', width: '100%', textAlign:'center'}}>
+//                       $46,153.94
+//                     </Text>
+//                   </View>
+//                   <View style={{marginTop: 20}}>
+//                     <Text>Asset Net Worth</Text>
+//                     <SvgLineChart3 dataChart={ptData}/>
+//                   </View>
+//                   <View style={{marginTop: 20}}>
+//                     <Text>Profits</Text>
+//                     <SvgLineChart3 dataChart={ptData}/>
+//                   </View>
+//                   <View style={{marginTop: 20}}>
+//                     <Text>Cumulative PNL</Text>
+//                     <CumulativePNL dataChart={dataForCumulative} dataBTCTrend={dataForBTC}/>
+//                   </View>
+//                   <View>
+//                     <Text>Profits</Text>
+//                     <SvgLineChart dataChart={ptData}/>
+//                     <SvgLineChart3 dataChart={ptData}/>
+//                   </View>                
+//                   </View>
+//                   <View>
+//                   <MyCalenderChart />
+//                   <MyCalenderChart2 timePeriods={6}/>
+//                   </View>
+//                   <View style={{position:'relative', marginTop:200, marginBottom: 300}}>
+//                   <GiftedLineChart />
+//                   <GiftedLineChart2 />
+//                   <Chart3 />
+//                   <LongPressMoveExample />
+//                   <LongPressDurationExample />
+//                   </View>
+//                 </View>
+//               }

@@ -1,15 +1,31 @@
-import { View, Text, Dimensions } from 'react-native'
+import { View, Text, Dimensions, StyleSheet, PanResponder, Platform, Animated, } from 'react-native'
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react'
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { HandleArrayDayForCurrentYear, HandleArrayDayForFullMonth , HandleArrayDayCorrespondingPeriods} from './HandleArrayDay';
-
+import { HandleArrayDayCorrespondingPeriods2 } from './HandleArrayDay2';
 
 interface MonthAndYearNeed{
   year:  number,
   monthName: string[],
   monthNumber: number[],
   dataPNL?: DataPNLType[][][]
+}
+interface CalenderPnlAllYear {
+  year: number,
+  monthDetails: CalenderMonthDetails[]
+}
+interface CalenderMonthDetails{
+  monthInNumber: number,
+  monthName: string,
+  dataPNL?: DataPNLType[][],
+}
+
+interface CalenderEachYearInfo{
+  year: number,
+  monthNames: string[],
+  monthNumbers: number[]
 }
 
 const {width, height} = Dimensions.get('screen');
@@ -24,138 +40,121 @@ export default function MyCalenderChart() {
     const dayNameInWeek = ["Sun","Mon", "Tue", "Web", "Thu", "Fri", "Sat",];
     const monthNameInYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const {currentDay, currentMonth, currentYear, currentDayName} = GetDate();
-    const isLeapYear = (year: number) => {
-        return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-      };
-    
-    const numberDayInMonth = isLeapYear(currentYear) ? [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] : [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    const totalDaysInYear = numberDayInMonth.reduce((total, days) => total + days, 0);
-    const totalDayInMonth = numberDayInMonth[currentMonth - 1]
-    const arrayAllNumberDay = Array.from({ length: totalDayInMonth }, (_, index) => index + 1);
-    const {indexBefore,indexAfter} =  FindDayNameStartInMonth(currentYear,currentMonth);
-    const totalLineShowNumberDay = (totalDayInMonth + indexBefore + (6 - indexAfter)) / 7;
-    // console.log('totalLineShowNumberDay ', totalLineShowNumberDay );
-    const arrayLine =  Array.from({length: totalLineShowNumberDay}, (_, index) => index + 1);
-    // console.log('arrayLine',arrayLine);
-    // console.log('startFromDayNameIndex', startFromDayNameIndex);
-    // const virtualDayBefore = startFromDayNameIndex;
-    // const virtualDayAfter = 0;
-    // console.log('indexBef', indexBefore, indexAfter);
-    
-    function AddVirtualDayInList (arrayData: DataPNLType[]){
-        let array: DataPNLType[] = arrayData;
-        let virtualDayInLast = 1;
-        for(let i = 0; i <= totalLineShowNumberDay * 7; i++){
-            if(i < indexBefore){
-                array.unshift({
-                    dayNumber: 0,
-                    valuePNL: 0,
-                })
-            } else if ( i > (arrayAllNumberDay.length + indexBefore)){
-                const index = i -  indexBefore;
-                array.push({
-                    dayNumber: 0,
-                    valuePNL: 0,
-                })
-            } 
-        };
-        // make long array to each array with 7 elements
-        const chunkSize = 7;
-        function chunkArray(arr: DataPNLType[]) {
-            const result = [];
-            for (let i = 0; i < arr.length; i += chunkSize) {
-                result.push(arr.slice(i, i + chunkSize));
-            }
-            return result;
-        }
-        const sliceArray = chunkArray(array);
-        
-        return sliceArray;
-    }
-    
-    
 
-    
-    // const arrayVirtual = AddVirtualDayInList(dataPNL);
-    // console.log('arrayVirtual', arrayVirtual);
-
-    // console.log('arrayAllNumberDay', arrayAllNumberDay);
-    const arrayAllNumberThisYear = 0
-    function CreateArrayNumberDayInMonth() {
-        const array = numberDayInMonth.map((totalDays, i) => {
-            return Array.from({ length: totalDays }, (_, index) => index + 1);
-        });
-        return array;
-    }
-
-    const arrayAllNumberDayInThisYear = CreateArrayNumberDayInMonth();
-    // console.log('arrayAllNumberDayInThisYear',arrayAllNumberDayInThisYear);
-
-    function FindDayNameStartInMonth (currentYear: number, currentMonth: number) {
-        // Get the day name for the 1st of the current month
-        const firstOfMonth = new Date(currentYear, currentMonth - 1, 1);
-        const firstOfMonthDayName = dayNameInWeek[firstOfMonth.getDay()];
-        const noBefore = dayNameInWeek.indexOf(firstOfMonthDayName);
-
-        // Get the day name for the last day of the current month
-        const lastOfMonth = new Date(currentYear, currentMonth - 1, totalDayInMonth);
-        const lastOfMonthDayName = dayNameInWeek[lastOfMonth.getDay()];
-        const noAfter = dayNameInWeek.indexOf(lastOfMonthDayName);
-        return {
-            "indexBefore": noBefore,
-            "indexAfter" : noAfter};
-    }
-    
-    
-    const [activeColor, setActiveColor] = useState("pink");
     const [activeDay, setActiveDay] = useState<number | null>(null);
-    // useEffect(()=>{
-    //     console.log('activeDay',activeDay);
-    // },[activeDay])
-    // console.log('dataPNLForDayInYear2 ',dataPNLForDayInYear2);
-    let preventReRunHandleArrayDay = 0;
     
-    const [arrayDayForCurrentYear, setArrayDayForCurrentYear] = useState<DataPNLType[][][]>([]);
-    const [reRender,setRerender] = useState(0);
-    const [arrayVirtual, setArrayVirtual] = useState<DataPNLType[][] | null>(null);
     const [calenderPNLData, setCalenderPNLData] = useState<MonthAndYearNeed[]>([])
     useEffect(() => {
-      // const getArrayCurrentYear = HandleArrayDayForCurrentYear({arrayDataPNL: dataPNLForDayInYear2, currentYear: 2024, currentMonth: 3}) || [];
-      // const getArrayPreviousYear = HandleArrayDayForFullMonth()
-      
-      // if(getArrayCurrentYear.length>0){
-      //   setArrayDayForCurrentYear(getArrayCurrentYear);
-      //   console.log('getArrayCurrentYear', getArrayCurrentYear.length);
-      //   setArrayVirtual(getArrayCurrentYear[0])
-      // } else {
-      //   console.log('getArrayCurrentYear no data', getArrayCurrentYear.length);
-      // }
       const getCalenderPnlData =  HandleArrayDayCorrespondingPeriods({arrayDataPNL: dataPNLForDayForSixMonths, periods: 6});
+      const a = HandleArrayDayCorrespondingPeriods2({arrayDataPNL: dataPNLForDayForSixMonths2, periods: 6})
       if(getCalenderPnlData.length> 0){
         setCalenderPNLData(getCalenderPnlData);
-        CreateArrayMonthName();   
+        // CreateArraySomeArrayFromDataPNL(getCalenderPnlData);   getCalenderPnlData: MonthAndYearNeed[]
+        CreateArraySomeArrayFromDataPNL2(a); 
       }
-      function CreateArrayMonthName (){
-        let arrayMonthName: string[] = [];
-        let objectEndMonthAndYear:{monthIndex: number, year: number, monthName: string} = {monthIndex: 1,monthName: "January", year: currentYear}
-        getCalenderPnlData.map((objPNL: MonthAndYearNeed, i: number) =>{
-          const monthName = objPNL.monthName;
-          const reverseMonthName = monthName.reverse();
-          arrayMonthName = [...arrayMonthName,...reverseMonthName];
+      // function CreateArraySomeArrayFromDataPNL (getCalenderPnlData: MonthAndYearNeed[]){
 
-          const year = objPNL.year;
-          const monthNumber = objPNL.monthNumber
+      //   // Task 1: Create monthName array;
+      //   let arrayMonthName: string[] = [];
+
+      //   // Task 2: Create object that has info about limit of period such as "endMonth", "endYear".
+      //   let objectEndMonthAndYear:{monthIndex: number, year: number, monthName: string} = {monthIndex: 1,monthName: "January", year: currentYear};
+
+      //   // Task 3: Create array PNL. Follow this structure. [lastmonth,...,firstmonth].
+      //   let arrayPNL: DataPNLType[][][] = []
+      //   getCalenderPnlData.map((objPNL: MonthAndYearNeed, i: number) =>{
+      //     const monthName = objPNL.monthName;
+      //     const reverseMonthName = monthName.reverse();
+      //     const monthPNL = objPNL.dataPNL || [];
+      //     const copyMonthPNL = [...monthPNL]
+      //     const reverseMonthPNL = copyMonthPNL.reverse() || [];
+      //     arrayPNL = [...arrayPNL, ...reverseMonthPNL]; // Array like [3,2,1,12,11,10]. go back time.
+      //     arrayMonthName = [...arrayMonthName,...reverseMonthName];
+      //     const year = objPNL.year;
+      //     const monthNumber = objPNL.monthNumber
+      //     if(i === getCalenderPnlData.length - 1){
+      //       objectEndMonthAndYear.year = year;
+      //       objectEndMonthAndYear.monthIndex = monthNumber[0];
+      //       objectEndMonthAndYear.monthName = monthName.reverse()[0];
+      //     }
+      //   });
+      //   // console.log('arrayMonthName',arrayMonthName);
+
+      //   // This result for task 1.
+      //   setListMonthName(arrayMonthName);
+
+      //   // This result for task 2.
+      //   setEndMonthYear(objectEndMonthAndYear);
+
+      //   // This result for task 3.
+      //   setArrayPNLEachMonth(arrayPNL);
+      //   setArrayPNLEachMonthReverse(arrayPNL.reverse());
+      //   setActiveScrollIndex(arrayPNL.length - 1);
+      // };
+      function CreateArraySomeArrayFromDataPNL2 (getCalenderPnlData: CalenderPnlAllYear[]){
+
+        // Task 1: Create monthName array;
+        let arrayMonthName: string[] = [];
+
+        // Task 2: Create object that has info about limit of period such as "endMonth", "endYear".
+        let objectEndMonthAndYear:{monthIndex: number, year: number, monthName: string} = {monthIndex: 1,monthName: "January", year: currentYear};
+
+        // Task 3: Create array PNL. Follow this structure. [lastmonth,...,firstmonth].
+        let arrayPnlAllYear: DataPNLType[][][] = []
+
+        getCalenderPnlData.map((objYear: CalenderPnlAllYear, i: number) =>{
+          const year = objYear.year;
+          const monthDetails = objYear.monthDetails;
+          // const monthName = objPNL.monthName;
+          // const reverseMonthName = monthName.reverse();
+          // const monthPNL = objPNL.dataPNL || [];
+          // const copyMonthPNL = [...monthPNL]
+          // const reverseMonthPNL = copyMonthPNL.reverse() || [];
+          // arrayPNL = [...arrayPNL, ...reverseMonthPNL]; // Array like [3,2,1,12,11,10]. go back time.
+          // arrayMonthName = [...arrayMonthName,...reverseMonthName];
+          // const monthNumber = objPNL.monthNumber
+
+          // Solve task 1.
+          let arrayMonthNameThisYear: string[] = [];
+          let arrayPNLMonthThisYear: DataPNLType[][][] = [];
+          monthDetails.map((monthDetail: CalenderMonthDetails, k : number) => {
+            const monthName = monthDetail.monthName;
+            const monthInNumber = monthDetail.monthInNumber;
+            const dataPNL = monthDetail.dataPNL || [];
+            arrayMonthNameThisYear.push(monthName);
+            arrayPNLMonthThisYear.push(dataPNL);
+          })
+          const reverseArrayMonthName = arrayMonthNameThisYear.reverse();
+          arrayMonthName.push(...reverseArrayMonthName);
+
+          const reverseArrayPnlAllYear = arrayPNLMonthThisYear.reverse();
+          arrayPnlAllYear.push(...reverseArrayPnlAllYear)
+
+          // Solve task 2.
+          // Determine the last month and las year in calender
           if(i === getCalenderPnlData.length - 1){
             objectEndMonthAndYear.year = year;
-            objectEndMonthAndYear.monthIndex = monthNumber[0];
-            objectEndMonthAndYear.monthName = monthName.reverse()[0];
+            const lastMonthInCalender = objYear.monthDetails[0];
+            objectEndMonthAndYear.monthIndex = lastMonthInCalender.monthInNumber;
+            objectEndMonthAndYear.monthName = lastMonthInCalender.monthName;
           }
+
+          // Solve task 3.
         });
         // console.log('arrayMonthName',arrayMonthName);
+
+        // This result for task 1.
         setListMonthName(arrayMonthName);
-        setEndMonthYear(objectEndMonthAndYear)
+
+        // This result for task 2.
+        setEndMonthYear(objectEndMonthAndYear);
+
+        // This result for task 3.
+        setArrayPNLEachMonth(arrayPnlAllYear);
       };
-    },[reRender])
+
+      
+    },[])
 
     const [activeYear, setActiveYear] = useState<number>(currentYear);
     const [endMonthYear, setEndMonthYear] = useState<{monthIndex: number, year: number, monthName: string}>({monthIndex: 1,monthName: "January", year: currentYear});
@@ -164,11 +163,9 @@ export default function MyCalenderChart() {
     const [activeMonthIndex, setActiveMonthIndex] = useState<number>(0); // set the initial value = 0 because it get the first element from lisMonthName array.
     const [listMonthName, setListMonthName] = useState<string[]>([]);
     const [monthNameActive, setMonthNameActive] = useState<string>(monthNameInYear[currentMonth - 1]);
+
+    const [arrayPNLEachMonth, setArrayPNLEachMonth] = useState<DataPNLType[][][]>([]);  // Array is arrange look like [3,2,1,12,11,10]. go back time.
     const handlePreviuosMonth = () =>{
-      // console.log('endMonthYear.monthIndex',endMonthYear.monthName,endMonthYear.year);
-      // console.log('monthNameActive',monthNameActive, activeYear);
-      // console.log('activeMonthIndex',activeMonthIndex);
-      // console.log('listMonthName',listMonthName);
       if(monthNameActive === endMonthYear.monthName && activeYear === endMonthYear.year) return console.log('Last month data PNL');;
       if(activeMonth > 1){
         setActiveMonth(activeMonth - 1)
@@ -179,6 +176,7 @@ export default function MyCalenderChart() {
         setActiveYear(prev => {return prev - 1})
       }
       setActiveMonthIndex(prev => { return prev + 1});
+      setActiveDay(null)
     }
     const handleNextMonth = () =>{
       if(activeMonth === currentMonth && activeYear === currentYear) return console.log('No more data PNL');;
@@ -196,21 +194,94 @@ export default function MyCalenderChart() {
         setMonthNameActive(monthNameInYear[activeMonth]);
       } 
       setActiveMonthIndex(activeMonthIndex - 1);
+      setActiveDay(null)
     }
+
+    const [dragged, setDragged] = useState(false);
+    const [position, setPosition] = useState<{x: number; y: number}>({x: 0,y: 0,});
+  
+    const panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: (evt, gestureState) => true,
+      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+      onMoveShouldSetPanResponder: (evt, gestureState) => true,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+      onShouldBlockNativeResponder: () => false,
+      onPanResponderTerminationRequest: () => true,
+  
+      onPanResponderGrant: (evt, gestureState) => {
+        // Set a timeout to simulate a hold
+        // if (Platform.OS === 'ios') {
+        //   console.log('grant', gestureState.dx);
+        //   setPosition({x: gestureState.moveX, y: gestureState.moveY});
+        // }
+        setDragged(true)
+      },
+  
+      onPanResponderMove: (evt, gestureState) => {
+        // This is triggered as the user moves their finger
+        if (dragged) {
+          setPosition({x: gestureState.moveX, y: gestureState.moveY});
+        }
+      },
+      onPanResponderEnd: () => {
+        // This is triggered when the user lifts their finger
+        // setPosition({x: 0, y: 0});
+      },
+    });
+    // useEffect(() => {
+    //   console.log('drag', dragged, "position", position.x);
+    // },[position, dragged])
     
+
+    const [boxColorActive, setBoxColorActive] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const boxColors = ["red", "blue", "pink", "orange", "gray"];
+    const panResponder2 = PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (evt, gestureState) => {
+        console.log('move');
+        const dx = gestureState.dx;
+        const absoluteDX = Math.abs(dx);
+        const percentage = absoluteDX / width;
+        if (currentIndex === 0 && dx > 0) {
+          // If on the first box and swiping right, move to the next box
+          setCurrentIndex(1);
+        } else if (dx < 0 && currentIndex > 0) {
+          // If swiping left and not on the first box, move to the previous box
+          setCurrentIndex(currentIndex - 1);
+        } else if (dx > 0 && currentIndex < boxColors.length - 1) {
+          // If swiping right and not on the last box, move to the next box
+          setCurrentIndex(currentIndex + 1);
+        }
+      },
+      onPanResponderRelease: () => {},
+    });
+    useEffect(() => {
+      console.log('currentIndex', currentIndex,);
+    },[currentIndex]);
+    const handleScroll = (event: any) => {
+      if (Platform.OS === 'android') {
+        const offsetX = event.nativeEvent.contentOffset.x;
+        const pageIndex = Math.ceil(offsetX / width) + 1;
+        return;
+      }
+      const offsetX = event.nativeEvent.contentOffset.x;
+      const pageIndex = Math.floor(offsetX / width) + 1;
+    };
+  
+    const scrollWidth = calenderWidth * arrayPNLEachMonth.length
   return (
-    <View style={{width: calenderWidth, paddingHorizontal: 10, borderWidth: 0, borderColor:'gray'}}>
-      <TouchableWithoutFeedback onPress={() => setRerender(prev => {return prev + 1})}>
-        <Text>Re-Run</Text>
-      </TouchableWithoutFeedback>
+    <View style={{width: calenderWidth, paddingHorizontal: 10, borderWidth: 1, borderColor:'gray'}}>
+
+      {/* The heading of the callender that include "monthName, year, and two buttons for navigate between month" */}
       <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', width: "100%", marginVertical: 10}}>
-            <View style={{width: 40, backgroundColor:'pink', height:40}}>
+            <View>
               <TouchableWithoutFeedback onPress={handlePreviuosMonth}>
-                <View style={{width: 40, backgroundColor:'pink', height:40}}>
+                <View style={{width: 40, height:30, justifyContent:'center', alignItems:'center'}}>
                   <Ionicons 
                     name="chevron-back" 
                     size={20} 
-                    color={"black"} 
+                    color={monthNameActive === endMonthYear.monthName && activeYear === endMonthYear.year ? 'gray' : "blue"} 
                     style={{}} 
                   />
                 </View>
@@ -219,21 +290,22 @@ export default function MyCalenderChart() {
           <Text style={{fontSize: 18, fontWeight: "500"}}>
             {listMonthName?.[activeMonthIndex]} {activeYear}
           </Text>
-          <View style={{width: 40, backgroundColor:'pink', height : 40}}>
+          <View>
             <TouchableWithoutFeedback onPress={handleNextMonth}>
-              <View style={{width: 40, backgroundColor:'pink', height:40}}>
+              <View style={{width: 40, height:30, justifyContent:'center', alignItems:'center'}}>
                 <Ionicons 
                   name="chevron-back" 
                   size={20} 
-                  color={"black"} 
+                  color={activeMonth === currentMonth && activeYear === currentYear ? "gray" : "blue"} 
                   style={{transform:[{rotate: '180deg'}]}} 
                 />
               </View>
             </TouchableWithoutFeedback>
           </View>
       </View>
-      <ScrollView>
-        <View style={{display:'flex', flexDirection:'row', alignItems:'center', width: "100%", marginVertical: 10}}> 
+
+      {/* This is create the shoter dayName (Sun, Mon, Tue ...) */}
+      <View style={{display:'flex', flexDirection:'row', alignItems:'center', width: "100%", marginVertical: 10,}}> 
           {dayNameInWeek.map((dayName: string, i: number) => {
               return(
                   <Text key={i} style={{width: calenderCanSee / 7, textAlign: 'center'}}>
@@ -241,83 +313,15 @@ export default function MyCalenderChart() {
                   </Text>
               )
           })}
-        </View>
-        {/* <View style={{ width: "100%", display:'flex', flexDirection:'row', flexWrap:'wrap'}}>
-          {arrayLine.map((_, index) =>{
-              return(
-                  <View key={index} style={{ width: "100%", height: calenderCanSee/7, display:'flex', flexDirection:'row', marginBottom: 5}}>
-                      {arrayVirtual !== null && arrayVirtual.length > 0 && arrayVirtual[index].map((dayData: DataPNLType, i: number) => {
-                          const dayNumber = dayData.dayNumber ;
-                          const dayPNL = dayData.valuePNL ;
-                          return (
-                              <TouchableWithoutFeedback onPress={() => {console.log('touch in day'); setActiveDay(dayNumber === activeDay ? null : (dayNumber === 0 ? null : dayNumber))}} key={i}>
-                              <View 
-                                  style={{width: calenderCanSee / 7,height: calenderCanSee/7, backgroundColor: dayNumber === activeDay ? "pink" : "white",
-                                      display:'flex', justifyContent:'center', alignItems:'center', padding: 5,borderWidth: 0, borderColor:'gray', borderRadius: 5, 
-                                  }}
-                               >
-                                      <Text style={{ textAlign:'center', fontSize:13, fontWeight:"600", }}>
-                                          {dayNumber !== 0 ? dayNumber : ""}
-                                      </Text>
-                                      <Text style={{color: dayPNL > 0 ? "green" : "red", fontSize: 12}}>
-                                          {dayPNL > 0 ? "+" : (dayPNL !== 0 ? "-" : "")}
-                                          {dayPNL !== 0 ? dayPNL : ""}
-                                      </Text>
-                                  
-                              </View>
-                              </TouchableWithoutFeedback>
-              
-                          )
-                      })}
-                  </View>
-              )
-          })}
-        </View> */}
-      </ScrollView>
-      {/* {arrayDayForCurrentYear.length > 0 ? 
-      arrayDayForCurrentYear.map((arrayVirtual: DataPNLType[][], k: number)=>{
-        console.log('k',k);
-        return(
-          <View key={k} style={{ width: "100%", display:'flex', flexDirection:'row', flexWrap:'wrap'}}>
-          {k+1 === activeMonth && arrayVirtual !== null && arrayVirtual.length > 0 && Array.from({length:arrayVirtual?.length},(_,index)=> index + 1).map((_, index) =>{
-              return(
-                  <View key={index} style={{ width: "100%", height: calenderCanSee/7, display:'flex', flexDirection:'row', marginBottom: 5}}>
-                      {arrayVirtual !== null && arrayVirtual.length > 0 && arrayVirtual[index].map((dayData: DataPNLType, i: number) => {
-                          const dayNumber = dayData.dayNumber ;
-                          const dayPNL = dayData.valuePNL ;
-                          return (
-                              <TouchableWithoutFeedback onPress={() => {console.log('touch in day'); setActiveDay(dayNumber === activeDay ? null : (dayNumber === 0 ? null : dayNumber))}} key={i}>
-                              <View 
-                                  style={{width: calenderCanSee / 7,height: calenderCanSee/7, backgroundColor: dayNumber === activeDay ? "pink" : "white",
-                                      display:'flex', justifyContent:'center', alignItems:'center', padding: 5,borderWidth: 0, borderColor:'gray', borderRadius: 5, 
-                                  }}
-                               >
-                                      <Text style={{ textAlign:'center', fontSize:13, fontWeight:"600", }}>
-                                          {dayNumber !== 0 ? dayNumber : ""}
-                                      </Text>
-                                      <Text style={{color: dayPNL > 0 ? "green" : "red", fontSize: 12}}>
-                                          {dayPNL > 0 ? "+" : (dayPNL !== 0 ? "-" : "")}
-                                          {dayPNL !== 0 ? dayPNL : ""}
-                                      </Text>
-                                  
-                              </View>
-                              </TouchableWithoutFeedback>
-                          )
-                      })}
-                  </View>
-              )
-          })}
-        </View>
-        )
-      }) : ""} */}
+      </View>
+
+      {/* This is main of the calender, that include exactly day in month and its pnl data */}
       {calenderPNLData.length > 0 ? calenderPNLData.map((objPNL: MonthAndYearNeed, k: number)=>{
         const arrayPNL: DataPNLType[][][] = objPNL.dataPNL || [];
         const monthNumber = objPNL.monthNumber;
-        console.log('monthNumber',monthNumber);
-        const monthName = objPNL.monthName;
         const year = objPNL.year;
         return(
-          <View key={k}>
+          <View key={k} style={{borderWidth: 0, borderColor:'gray', }}>
             {monthNumber.map((monthIndex: number, m: number) => {
               const pnlForThisMonth = arrayPNL[m];
               return (
@@ -331,11 +335,7 @@ export default function MyCalenderChart() {
                                   const dayPNL = dayData.valuePNL ;
                                   return (
                                       <TouchableWithoutFeedback onPress={() => {console.log('touch in day'); setActiveDay(dayNumber === activeDay ? null : (dayNumber === 0 ? null : dayNumber))}} key={i}>
-                                        <View 
-                                            style={{width: calenderCanSee / 7,height: calenderCanSee/7, backgroundColor: dayNumber === activeDay ? "pink" : "white",
-                                                display:'flex', justifyContent:'center', alignItems:'center', padding: 5,borderWidth: 0, borderColor:'gray', borderRadius: 5, 
-                                            }}
-                                        >
+                                        <View style={[styles.decorLineShowDate, {width: calenderCanSee / 7,height: calenderCanSee/7, backgroundColor: dayNumber === activeDay ? "pink" : "white",}]}>
                                           <Text style={{ textAlign:'center', fontSize:13, fontWeight:"600", }}>
                                               {dayNumber !== 0 ? dayNumber : ""}
                                           </Text>
@@ -350,13 +350,56 @@ export default function MyCalenderChart() {
                           </View>
                       )
                   })}
-        </View>)})}
+                </View>)})}
           </View>
         )
       }) : ""}
+
+    {/* <ScrollView
+      contentContainerStyle={[
+        {
+          width: calenderWidth * boxColors.length,
+        },
+      ]}
+      horizontal
+      pagingEnabled
+      showsHorizontalScrollIndicator={false}
+      scrollEnabled={true}
+      onScroll={handleScroll}
+      scrollEventThrottle={16}
+      contentOffset={{ x: calenderWidth * boxColors.length, y: 0 }}
+      >
+      <View style={{flexDirection: 'row'}}>
+        {boxColors.map((boxColor, index) => (
+          <View
+            key={index}
+            style={{
+              width: calenderWidth,
+              height: 300,
+              backgroundColor: boxColor,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text>{boxColor}</Text>
+          </View>
+        ))}
+      </View>
+    </ScrollView> */}
     </View>
   )
 }
+// Stylesheet
+const styles = StyleSheet.create({
+  decorLineShowDate: {
+    display:'flex', 
+    justifyContent:'center', 
+    alignItems:'center', 
+    padding: 5,
+    borderWidth: 0, 
+    borderColor:'gray', 
+    borderRadius: 5,
+  },
+})
 
 function GetDate(){
     const currentDate = new Date();
@@ -570,9 +613,7 @@ interface DataPNLType {
     dayNumber: number,
     valuePNL: number
 }
-interface DataPNLForAllYearType{
 
-}
 const dataPNL: DataPNLType[] = [{
     dayNumber: 1,
     valuePNL: 100
@@ -1311,19 +1352,7 @@ const dataPNLForDayInYear2: DataPNLType[][] = [
     valuePNL: 100
   }]
 ]
-function CreateArrayPNLForYear(year: number, dataInput: DataPNLType[]){
-  const {currentDay, currentMonth, currentYear, currentDayName} = GetDate();
 
-
-}
-
-const a = [[
-  [{"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 1, "valuePNL": 100}, {"dayNumber": 2, "valuePNL": 100}, {"dayNumber": 3, "valuePNL": 100}, {"dayNumber": 4, "valuePNL": 100}, {"dayNumber": 5, "valuePNL": 100}, {"dayNumber": 6, "valuePNL": 100}], 
-  [{"dayNumber": 7, "valuePNL": 100}, {"dayNumber": 8, "valuePNL": 100}, {"dayNumber": 9, "valuePNL": 100}, {"dayNumber": 10, "valuePNL": 100}, {"dayNumber": 11, "valuePNL": 100}, {"dayNumber": 12, "valuePNL": 100}, {"dayNumber": 13, "valuePNL": 100}], 
-  [{"dayNumber": 14, "valuePNL": 100}, {"dayNumber": 15, "valuePNL": 100}, {"dayNumber": 16, "valuePNL": 100}, {"dayNumber": 17, "valuePNL": 100}, {"dayNumber": 18, "valuePNL": 100}, {"dayNumber": 19, "valuePNL": 100}, {"dayNumber": 20, "valuePNL": 100}], 
-  [{"dayNumber": 21, "valuePNL": 100}, {"dayNumber": 22, "valuePNL": 100}, {"dayNumber": 23, "valuePNL": 100}, {"dayNumber": 24, "valuePNL": 100}, {"dayNumber": 25, "valuePNL": 100}, {"dayNumber": 26, "valuePNL": 100}, {"dayNumber": 27, "valuePNL": 100}], 
-  [{"dayNumber": 28, "valuePNL": 100}, {"dayNumber": 29, "valuePNL": 100}, {"dayNumber": 30, "valuePNL": 100}, {"dayNumber": 31, "valuePNL": 100}, {"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 0, "valuePNL": 0}, {"dayNumber": 0, "valuePNL": 0}], 
-]]
 const dataPNLForDayInPreviousYear: DataPNLType[][] = [
   [{
     dayNumber: 1,
@@ -4094,4 +4123,577 @@ const dataPNLForDayForSixMonths: DataPNLType[][] = [
     dayNumber: 31,
     valuePNL: 100
   },],
+]
+interface DataPNLFromServer{
+  year: number,
+  dataPNL: DataPNLType[][]
+}
+const dataPNLForDayForSixMonths2: DataPNLFromServer[] = [
+  {
+    year: 2024,
+    dataPNL: [
+      [{
+        dayNumber: 1,
+        valuePNL: 100
+      }, {
+        dayNumber: 2,
+        valuePNL: 100
+      }, {
+        dayNumber: 3,
+        valuePNL: 100
+      }, {
+        dayNumber: 4,
+        valuePNL: 100
+      }, {
+        dayNumber: 5,
+        valuePNL: 100
+      }, {
+        dayNumber: 6,
+        valuePNL: 100
+      }, {
+        dayNumber: 7,
+        valuePNL: 100
+      }, {
+        dayNumber: 8,
+        valuePNL: 100
+      }, {
+        dayNumber: 9,
+        valuePNL: 100
+      }, {
+        dayNumber: 10,
+        valuePNL: 100
+      }, {
+        dayNumber: 11,
+        valuePNL: 100
+      }, {
+        dayNumber: 12,
+        valuePNL: 100
+      }, {
+        dayNumber: 13,
+        valuePNL: 100
+      }, {
+        dayNumber: 14,
+        valuePNL: 100
+      }, {
+        dayNumber: 15,
+        valuePNL: 100
+      }, {
+        dayNumber: 16,
+        valuePNL: 100
+      }, {
+        dayNumber: 17,
+        valuePNL: 100
+      }, {
+        dayNumber: 18,
+        valuePNL: 100
+      }, {
+        dayNumber: 19,
+        valuePNL: 100
+      }, {
+        dayNumber: 20,
+        valuePNL: 100
+      }, {
+        dayNumber: 21,
+        valuePNL: 100
+      }, {
+        dayNumber: 22,
+        valuePNL: 100
+      }, {
+        dayNumber: 23,
+        valuePNL: 100
+      }, {
+        dayNumber: 24,
+        valuePNL: 100
+      }, {
+        dayNumber: 25,
+        valuePNL: 100
+      }, {
+        dayNumber: 26,
+        valuePNL: 100
+      }, {
+        dayNumber: 27,
+        valuePNL: 100
+      }, {
+        dayNumber: 28,
+        valuePNL: 100
+      }, {
+        dayNumber: 29,
+        valuePNL: 100
+      }, {
+        dayNumber: 30,
+        valuePNL: 100
+      }, {
+        dayNumber: 31,
+        valuePNL: 100
+      }],
+      [{
+        dayNumber: 1,
+        valuePNL: 100
+      }, {
+        dayNumber: 2,
+        valuePNL: 100
+      }, {
+        dayNumber: 3,
+        valuePNL: 100
+      }, {
+        dayNumber: 4,
+        valuePNL: 100
+      }, {
+        dayNumber: 5,
+        valuePNL: 100
+      }, {
+        dayNumber: 6,
+        valuePNL: 100
+      }, {
+        dayNumber: 7,
+        valuePNL: 100
+      }, {
+        dayNumber: 8,
+        valuePNL: 100
+      }, {
+        dayNumber: 9,
+        valuePNL: 100
+      }, {
+        dayNumber: 10,
+        valuePNL: 100
+      }, {
+        dayNumber: 11,
+        valuePNL: 100
+      }, {
+        dayNumber: 12,
+        valuePNL: 100
+      }, {
+        dayNumber: 13,
+        valuePNL: 100
+      }, {
+        dayNumber: 14,
+        valuePNL: 100
+      }, {
+        dayNumber: 15,
+        valuePNL: 100
+      }, {
+        dayNumber: 16,
+        valuePNL: 100
+      }, {
+        dayNumber: 17,
+        valuePNL: 100
+      }, {
+        dayNumber: 18,
+        valuePNL: 100
+      }, {
+        dayNumber: 19,
+        valuePNL: 100
+      }, {
+        dayNumber: 20,
+        valuePNL: 100
+      }, {
+        dayNumber: 21,
+        valuePNL: 100
+      }, {
+        dayNumber: 22,
+        valuePNL: 100
+      }, {
+        dayNumber: 23,
+        valuePNL: 100
+      }, {
+        dayNumber: 24,
+        valuePNL: 100
+      }, {
+        dayNumber: 25,
+        valuePNL: 100
+      }, {
+        dayNumber: 26,
+        valuePNL: 100
+      }, {
+        dayNumber: 27,
+        valuePNL: 100
+      }, {
+        dayNumber: 28,
+        valuePNL: 100
+      },
+      {
+        dayNumber: 29,
+        valuePNL: 100
+      }],
+      [{
+        dayNumber: 1,
+        valuePNL: 100
+      }, {
+        dayNumber: 2,
+        valuePNL: 100
+      }, {
+        dayNumber: 3,
+        valuePNL: 100
+      }, {
+        dayNumber: 4,
+        valuePNL: 100
+      }, {
+        dayNumber: 5,
+        valuePNL: 100
+      }, {
+        dayNumber: 6,
+        valuePNL: 100
+      }, {
+        dayNumber: 7,
+        valuePNL: 100
+      }, {
+        dayNumber: 8,
+        valuePNL: 100
+      }, {
+        dayNumber: 9,
+        valuePNL: 100
+      }, {
+        dayNumber: 10,
+        valuePNL: 100
+      }, {
+        dayNumber: 11,
+        valuePNL: 100
+      }, {
+        dayNumber: 12,
+        valuePNL: 100
+      }, {
+        dayNumber: 13,
+        valuePNL: 100
+      }, {
+        dayNumber: 14,
+        valuePNL: 100
+      }, {
+        dayNumber: 15,
+        valuePNL: 100
+      }, {
+        dayNumber: 16,
+        valuePNL: 100
+      }, {
+        dayNumber: 17,
+        valuePNL: 100
+      }, {
+        dayNumber: 18,
+        valuePNL: 100
+      }, {
+        dayNumber: 19,
+        valuePNL: 100
+      }, {
+        dayNumber: 20,
+        valuePNL: 100
+      }, {
+        dayNumber: 21,
+        valuePNL: 100
+      }, {
+        dayNumber: 22,
+        valuePNL: 100
+      }, {
+        dayNumber: 23,
+        valuePNL: 100
+      }, {
+        dayNumber: 24,
+        valuePNL: 100
+      }, {
+        dayNumber: 25,
+        valuePNL: 100
+      }, {
+        dayNumber: 26,
+        valuePNL: 100
+      }, {
+        dayNumber: 27,
+        valuePNL: 100
+      }, {
+        dayNumber: 28,
+        valuePNL: 100
+      }, {
+        dayNumber: 29,
+        valuePNL: 100
+      }, {
+        dayNumber: 30,
+        valuePNL: 100
+      }, {
+        dayNumber: 31,
+        valuePNL: 100
+      }],
+    ]
+  },
+  {
+    year: 2023,
+    dataPNL: [
+      [{
+        dayNumber: 1,
+        valuePNL: 100
+      }, {
+        dayNumber: 2,
+        valuePNL: 100
+      }, {
+        dayNumber: 3,
+        valuePNL: 100
+      }, {
+        dayNumber: 4,
+        valuePNL: 100
+      }, {
+        dayNumber: 5,
+        valuePNL: 100
+      }, {
+        dayNumber: 6,
+        valuePNL: 100
+      }, {
+        dayNumber: 7,
+        valuePNL: 100
+      }, {
+        dayNumber: 8,
+        valuePNL: 100
+      }, {
+        dayNumber: 9,
+        valuePNL: 100
+      }, {
+        dayNumber: 10,
+        valuePNL: 100
+      }, {
+        dayNumber: 11,
+        valuePNL: 100
+      }, {
+        dayNumber: 12,
+        valuePNL: 100
+      }, {
+        dayNumber: 13,
+        valuePNL: 100
+      }, {
+        dayNumber: 14,
+        valuePNL: 100
+      }, {
+        dayNumber: 15,
+        valuePNL: 100
+      }, {
+        dayNumber: 16,
+        valuePNL: 100
+      }, {
+        dayNumber: 17,
+        valuePNL: 100
+      }, {
+        dayNumber: 18,
+        valuePNL: 100
+      }, {
+        dayNumber: 19,
+        valuePNL: 100
+      }, {
+        dayNumber: 20,
+        valuePNL: 100
+      }, {
+        dayNumber: 21,
+        valuePNL: 100
+      }, {
+        dayNumber: 22,
+        valuePNL: 100
+      }, {
+        dayNumber: 23,
+        valuePNL: 100
+      }, {
+        dayNumber: 24,
+        valuePNL: 100
+      }, {
+        dayNumber: 25,
+        valuePNL: 100
+      }, {
+        dayNumber: 26,
+        valuePNL: 100
+      }, {
+        dayNumber: 27,
+        valuePNL: 100
+      }, {
+        dayNumber: 28,
+        valuePNL: 100
+      }, {
+        dayNumber: 29,
+        valuePNL: 100
+      }, {
+        dayNumber: 30,
+        valuePNL: 100
+      },
+      {
+        dayNumber: 31,
+        valuePNL: 100
+      }],
+      [{
+        dayNumber: 1,
+        valuePNL: 100
+      }, {
+        dayNumber: 2,
+        valuePNL: 100
+      }, {
+        dayNumber: 3,
+        valuePNL: 100
+      }, {
+        dayNumber: 4,
+        valuePNL: 100
+      }, {
+        dayNumber: 5,
+        valuePNL: 100
+      }, {
+        dayNumber: 6,
+        valuePNL: 100
+      }, {
+        dayNumber: 7,
+        valuePNL: 100
+      }, {
+        dayNumber: 8,
+        valuePNL: 100
+      }, {
+        dayNumber: 9,
+        valuePNL: 100
+      }, {
+        dayNumber: 10,
+        valuePNL: 100
+      }, {
+        dayNumber: 11,
+        valuePNL: 100
+      }, {
+        dayNumber: 12,
+        valuePNL: 100
+      }, {
+        dayNumber: 13,
+        valuePNL: 100
+      }, {
+        dayNumber: 14,
+        valuePNL: 100
+      }, {
+        dayNumber: 15,
+        valuePNL: 100
+      }, {
+        dayNumber: 16,
+        valuePNL: 100
+      }, {
+        dayNumber: 17,
+        valuePNL: 100
+      }, {
+        dayNumber: 18,
+        valuePNL: 100
+      }, {
+        dayNumber: 19,
+        valuePNL: 100
+      }, {
+        dayNumber: 20,
+        valuePNL: 100
+      }, {
+        dayNumber: 21,
+        valuePNL: 100
+      }, {
+        dayNumber: 22,
+        valuePNL: 100
+      }, {
+        dayNumber: 23,
+        valuePNL: 100
+      }, {
+        dayNumber: 24,
+        valuePNL: 100
+      }, {
+        dayNumber: 25,
+        valuePNL: 100
+      }, {
+        dayNumber: 26,
+        valuePNL: 100
+      }, {
+        dayNumber: 27,
+        valuePNL: 100
+      }, {
+        dayNumber: 28,
+        valuePNL: 100
+      }, {
+        dayNumber: 29,
+        valuePNL: 100
+      }, {
+        dayNumber: 30,
+        valuePNL: 100
+      },],
+      [{
+        dayNumber: 1,
+        valuePNL: 100
+      }, {
+        dayNumber: 2,
+        valuePNL: 100
+      }, {
+        dayNumber: 3,
+        valuePNL: 100
+      }, {
+        dayNumber: 4,
+        valuePNL: 100
+      }, {
+        dayNumber: 5,
+        valuePNL: 100
+      }, {
+        dayNumber: 6,
+        valuePNL: 100
+      }, {
+        dayNumber: 7,
+        valuePNL: 100
+      }, {
+        dayNumber: 8,
+        valuePNL: 100
+      }, {
+        dayNumber: 9,
+        valuePNL: 100
+      }, {
+        dayNumber: 10,
+        valuePNL: 100
+      }, {
+        dayNumber: 11,
+        valuePNL: 100
+      }, {
+        dayNumber: 12,
+        valuePNL: 100
+      }, {
+        dayNumber: 13,
+        valuePNL: 100
+      }, {
+        dayNumber: 14,
+        valuePNL: 100
+      }, {
+        dayNumber: 15,
+        valuePNL: 100
+      }, {
+        dayNumber: 16,
+        valuePNL: 100
+      }, {
+        dayNumber: 17,
+        valuePNL: 100
+      }, {
+        dayNumber: 18,
+        valuePNL: 100
+      }, {
+        dayNumber: 19,
+        valuePNL: 100
+      }, {
+        dayNumber: 20,
+        valuePNL: 100
+      }, {
+        dayNumber: 21,
+        valuePNL: 100
+      }, {
+        dayNumber: 22,
+        valuePNL: 100
+      }, {
+        dayNumber: 23,
+        valuePNL: 100
+      }, {
+        dayNumber: 24,
+        valuePNL: 100
+      }, {
+        dayNumber: 25,
+        valuePNL: 100
+      }, {
+        dayNumber: 26,
+        valuePNL: 100
+      }, {
+        dayNumber: 27,
+        valuePNL: 100
+      }, {
+        dayNumber: 28,
+        valuePNL: 100
+      }, {
+        dayNumber: 29,
+        valuePNL: 100
+      },  {
+        dayNumber: 30,
+        valuePNL: 100
+      },{
+        dayNumber: 31,
+        valuePNL: 100
+      },],
+    ]
+  }
 ]
